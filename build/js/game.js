@@ -79,7 +79,7 @@
    * @param {number} width
    * @param {string} posType
    */
-  var DrawMessage = function(ctx, msg, x, y, width, posType) {
+  var drawMessage = function(ctx, msg, x, y, width, posType) {
     var FONT_SIZE = 16,
       FONT_HEIGHT = 21,
       PADDING_SIZE = 10;
@@ -430,19 +430,19 @@
     _drawPauseScreen: function() {
       switch (this.state.currentStatus) {
         case Verdict.WIN:
-          DrawMessage(this.ctx, 'Вы выиграли!', 310, 150, 300);
+          drawMessage(this.ctx, 'Вы выиграли!', 310, 150, 300);
           console.log('you have won!');
           break;
         case Verdict.FAIL:
-          DrawMessage(this.ctx, 'Вы проиграли :(', 310, 150, 300);
+          drawMessage(this.ctx, 'Вы проиграли :(', 310, 150, 300);
           console.log('you have failed!');
           break;
         case Verdict.PAUSE:
-          DrawMessage(this.ctx, 'Игра поставлена на паузу.', 310, 150, 300);
+          drawMessage(this.ctx, 'Игра поставлена на паузу.', 310, 150, 300);
           console.log('game is on pause!');
           break;
         case Verdict.INTRO:
-          DrawMessage(this.ctx, ['Привет, ты в игре!', 'Для того, чтобы начать нажми',
+          drawMessage(this.ctx, ['Привет, ты в игре!', 'Для того, чтобы начать нажми',
             'пробел. Для передвижения', 'используй стрелкии и shift для', 'запуска фаербола.'], 310, 250, 300, 'bottom');
           break;
       }

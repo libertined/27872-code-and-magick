@@ -70,6 +70,56 @@
   };
 
   /**
+   * Отрисовка сообщения. Задаем ссылку на контекст канваса, сообщение, начальную точку, ширину,
+   * необязательный параметр какой угол начальный верхний или нижний левый (по умолчанию - верхний)
+   * @param {Object} ctx
+   * @param {Object, string} msg - строка или массив со свтроками
+   * @param {number} x
+   * @param {number} y
+   * @param {number} width
+   * @param {string} posType
+   */
+  var drawMessage = function(ctx, msg, x, y, width, posType) {
+    var FONT_SIZE = 16,
+      FONT_HEIGHT = 21,
+      PADDING_SIZE = 10;
+    if (typeof posType === 'undefined') {
+      posType = 'top';
+    }
+    //приводим сообщение к одному виду
+    var msgArr = [];
+
+    if(typeof msg === 'string') {
+      msgArr.push(msg);
+    } else {
+      msgArr = msg;
+    }
+
+    //считаем высоту контейнера для сообщения
+    var msgHeight = msgArr.length * FONT_HEIGHT + 2 * PADDING_SIZE;
+    y = posType === 'top' ? y : Math.max(y - msgHeight, 0);
+
+    //выводим блок для сообщения
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(x + PADDING_SIZE, y + PADDING_SIZE, width, msgHeight);
+    ctx.fillStyle = 'white';
+    ctx.fillRect(x, y, width, msgHeight);
+
+    //выводим сообщение
+    ctx.fillStyle = 'black';
+    ctx.font = FONT_SIZE + 'px PT Mono';
+    var startX = x + PADDING_SIZE,
+      startY = y + 2 * PADDING_SIZE;
+
+    for ( var strMsg in msgArr ) {
+      if (msgArr.hasOwnProperty(strMsg)) {
+        ctx.fillText(msgArr[strMsg], startX, startY);
+        startY += FONT_HEIGHT;
+      }
+    }
+  };
+
+  /**
    * Правила перерисовки объектов в зависимости от состояния игры.
    * @type {Object.<ObjectType, function(Object, Object, number): Object>}
    */
@@ -380,16 +430,20 @@
     _drawPauseScreen: function() {
       switch (this.state.currentStatus) {
         case Verdict.WIN:
+          drawMessage(this.ctx, 'Вы выиграли!', 310, 150, 300);
           console.log('you have won!');
           break;
         case Verdict.FAIL:
+          drawMessage(this.ctx, 'Вы проиграли :(', 310, 150, 300);
           console.log('you have failed!');
           break;
         case Verdict.PAUSE:
+          drawMessage(this.ctx, 'Игра поставлена на паузу.', 310, 150, 300);
           console.log('game is on pause!');
           break;
         case Verdict.INTRO:
-          console.log('welcome to the game! Press Space to start');
+          drawMessage(this.ctx, ['Привет, ты в игре!', 'Для того, чтобы начать нажми',
+            'пробел. Для передвижения', 'используй стрелкии и shift для', 'запуска фаербола.'], 310, 250, 300, 'bottom');
           break;
       }
     },

@@ -1,33 +1,34 @@
 'use strict';
 //getMessage(a:*, b:*=):string  ?? *-любой, а *=, предопределенное значение?
 var getMessage = function(a, b) {
-  switch (typeof(a)) {
+  var res = '';
+  switch (typeof a) {
     case 'boolean':
-      if(a)
-        return 'Я попал в ' + b;
-      else
-        return 'Я никуда не попал';
+      if(a) {
+        res = 'Я попал в ' + b;
+      } else {
+        res = 'Я никуда не попал';
+      }
       break;
     case 'number':
-      return 'Я прыгнул на ' + a * 100 + ' сантиметров';
+      res = 'Я прыгнул на ' + a * 100 + ' сантиметров';
       break;
     default:
+      var sum = 0;
       if (a instanceof Array && b instanceof Array) {
-        var sum = 0,
-          minLength = Math.min(a.length, b.length);
+        var minLength = Math.min(a.length, b.length);
         for (var i = 0; i < minLength; i++) {
           sum += a[i] * b[i];
         }
-        return 'Я прошёл ' + sum + ' метров';
-      }
-      else if(a instanceof Array) {
-        var sum = 0,
-          aLength = a.length;
-        for (var i = 0; i < aLength; i++) {
-          sum += a[i];
+        res = 'Я прошёл ' + sum + ' метров';
+      } else if (a instanceof Array) {
+        var aLength = a.length;
+        for (var j = 0; j < aLength; j++) {
+          sum += a[j];
         }
-        return 'Я прошёл ' + sum + ' шагов';
+        res = 'Я прошёл ' + sum + ' шагов';
       }
       break;
   }
+  return res;
 };

@@ -45,7 +45,7 @@
     });
 
     this.submit();
-  }
+  };
 
   //Первоначальные настройки
   nameField.value = browserCookies.get('name') || '';

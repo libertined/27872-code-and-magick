@@ -32,3 +32,5 @@ var getMessage = function(a, b) {
   }
   return res;
 };
+
+getMessage(1, 2);

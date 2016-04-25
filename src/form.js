@@ -6,8 +6,10 @@
   var formCloseButton = document.querySelector('.review-form-close');
   var formRequiredNotes = document.querySelectorAll('.review-form-control.review-fields label');
   var MARK_LIMIT = 3;
+  var reviewForm = document.querySelector('form.review-form');
   var nameField = document.querySelector('#review-name');
   var markField = document.getElementsByName('review-mark');
+  var browserCookies = require('browser-cookies');
   var textField = document.querySelector('#review-text');
 
   /** Изменяет блок с подсказками о заполнении полей
@@ -71,11 +73,42 @@
   };
 
   //Первоначальные настройки
-  for(var j = 0; j < markField.length; j++) {
-    if(markField[j].checked) {
-      chooseRequiredText(markField[j].value);
-    }
-  }
+  nameField.value = browserCookies.get('name') || '';
+  var defMark = browserCookies.get('mark') || 3;
+  document.getElementById('review-mark-' + defMark).checked = true;
+
+  chooseRequiredText(defMark);
   chooseReviewNote();
 
+  reviewForm.onsubmit = function(evt) {
+    evt.preventDefault();
+
+    if(document.querySelector('.review-form-control.review-submit').disabled){
+      alert('Вы ввели не корректные данные');
+    } else {
+      //Определяем текущую дату
+      var today = new Date();
+      var myBidth = new Date(today.getFullYear() + '-04-28');
+      if(myBidth.valueOf() > today.valueOf()) {
+        myBidth = new Date(today.getFullYear() - 1 + '-04-28');
+      }
+      var dateToCookies = today.valueOf() - myBidth.valueOf();
+
+      var curMark = '';
+      for(var j = 0; j < markField.length; j++) {
+        if (markField[j].checked) {
+          curMark = markField[j].value;
+        }
+      }
+
+      browserCookies.set('mark', curMark, {
+        expires: today.valueOf + dateToCookies
+      });
+      browserCookies.set('name', nameField.value, {
+        expires: today.valueOf + dateToCookies
+      });
+
+      this.submit();
+    }
+  };
 })();

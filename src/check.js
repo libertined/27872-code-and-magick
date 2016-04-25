@@ -34,4 +34,3 @@ var getMessage = function(a, b) {
 };
 
 getMessage(1, 2);
-

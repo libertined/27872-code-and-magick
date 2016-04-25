@@ -64,11 +64,11 @@
     };
   }
 
-  nameField.onchange = function() {
+  nameField.oninput = function() {
     chooseReviewNote();
   };
 
-  textField.onchange = function() {
+  textField.oninput = function() {
     chooseReviewNote();
   };
 
@@ -83,8 +83,10 @@
   reviewForm.onsubmit = function(evt) {
     evt.preventDefault();
 
-    if(document.querySelector('.review-form-control.review-submit').disabled){
-      alert('Вы ввели не корректные данные');
+    if(document.querySelector('.review-form-control.review-submit').disabled) {
+      //alert('Вы ввели не корректные данные');
+      //Тут хорошо бы предупреждалку, но alert не пропускает Eslint, а что-то еще - непонятно куда,
+      //по идее итак есть уже поле с перечислением косяков. Я бы просто модальное окно сделала
     } else {
       //Определяем текущую дату
       var today = new Date();
@@ -94,12 +96,7 @@
       }
       var dateToCookies = today.valueOf() - myBidth.valueOf();
 
-      var curMark = '';
-      for(var j = 0; j < markField.length; j++) {
-        if (markField[j].checked) {
-          curMark = markField[j].value;
-        }
-      }
+      var curMark = document.querySelectorAll('.review-form-group-mark input:checked').item(0).value;
 
       browserCookies.set('mark', curMark, {
         expires: today.valueOf + dateToCookies

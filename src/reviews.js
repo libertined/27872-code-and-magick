@@ -1,10 +1,21 @@
 'use strict';
+/** @constant {string} */
+var REVIEW_LOAD_URL = 'http://o0.github.io/assets/json/reviews.json';
+
+/** @constant {int} */
 var IMG_SIZE = 124;
+
+/** @constant {int} */
 var RATING_STAR = 30;
+
 var reviewFilterBlock = document.querySelector('.reviews-filter');
 var reviewBlock = document.querySelector('.reviews-list');
+var reviewContainer = document.querySelector('.reviews');
 var templateElement = document.querySelector('template');
 var elementToClone;
+
+/** @type {Array.<Object>} */
+var reviewsList = [];
 
 if('content' in templateElement) {
   elementToClone = templateElement.content.querySelector('.review');
@@ -43,10 +54,109 @@ var getReviewElement = function(data, container) {
   container.appendChild(element);
 };
 
-reviewFilterBlock.classList.add('invisible');
+/** @param {function(string)} res */
+var loadShow = function(res) {
+  if(res === 'show') {
+    reviewContainer.classList.add('reviews-list-loading');
+    reviewFilterBlock.classList.add('invisible');
+  } else {
+    reviewContainer.classList.remove('reviews-list-loading');
+    reviewFilterBlock.classList.remove('invisible');
+  }
+};
 
-window.reviews.forEach(function(review) {
-  getReviewElement(review, reviewBlock);
+/** @param {function(Array.<Object>)} callback */
+var getReviews = function(callback) {
+  loadShow('show');
+  var xhr = new XMLHttpRequest();
+
+  /** @param {ProgressEvent} */
+  xhr.onload = function(evt) {
+    var loadedData = JSON.parse(evt.target.response);
+    callback(loadedData);
+    loadShow('hide');
+  };
+
+  /** @param {ProgressEvent} */
+  xhr.onerror = function() {
+    reviewContainer.classList.add('reviews-load-failure');
+    loadShow('hide');
+  };
+
+  xhr.timeout = 10000;
+  /** @param {ProgressEvent} */
+  xhr.ontimeout = function() {
+    reviewContainer.classList.add('reviews-load-failure');
+    loadShow('hide');
+  };
+
+  xhr.open('GET', REVIEW_LOAD_URL);
+  xhr.send();
+};
+
+/** @param {Array.<Object>} reviews */
+var renderReviews = function(reviews) {
+  reviewBlock.innerHTML = '';
+  reviews.forEach(function(review) {
+    getReviewElement(review, reviewBlock);
+  });
+};
+
+/**
+ * @param {Array.<Object>} hotels
+ * @param {string} filter
+ */
+var getFilteredReviews = function(reviews, filter) {
+  var reviewsToFilter = reviews.slice(0);
+
+  switch (filter) {
+    case 'reviews-recent':
+      reviewsToFilter = reviewsToFilter.filter(function(review) {
+        return new Date().valueOf() - new Date(review.date).valueOf() <= 14 * 24 * 60 * 60 * 1000;
+      });
+      reviewsToFilter.sort(function(a, b) {
+        return new Date(b.date).valueOf() - new Date(a.date).valueOf();
+      });
+      break;
+    case 'reviews-good':
+      reviewsToFilter = reviewsToFilter.filter(function(review) {
+        return review.rating >= 3;
+      });
+      reviewsToFilter.sort(function(a, b) {
+        return b.rating - a.rating;
+      });
+      break;
+    case 'reviews-bad':
+      reviewsToFilter = reviewsToFilter.filter(function(review) {
+        return review.rating <= 2;
+      });
+      reviewsToFilter.sort(function(a, b) {
+        return a.rating - b.rating;
+      });
+      break;
+    case 'reviews-popular':
+      reviewsToFilter.sort(function(a, b) {
+        return b.review_usefulness - a.review_usefulness;
+      });
+      break;
+  }
+  return reviewsToFilter;
+};
+
+
+var setFiltrationEnabled = function() {
+  var filters = reviewFilterBlock.querySelectorAll('.reviews-filter-item');
+  for (var i = 0; i < filters.length; i++) {
+    filters[i].onclick = function() {
+      var filteredReviews = getFilteredReviews(reviewsList, this.getAttribute('for'));
+      renderReviews(filteredReviews);
+    };
+  }
+};
+
+
+getReviews(function(loadedReview) {
+  reviewsList = loadedReview;
+  renderReviews(reviewsList);
+  setFiltrationEnabled(reviewsList);
 });
-
-reviewFilterBlock.classList.remove('invisible');

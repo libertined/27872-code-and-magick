@@ -731,6 +731,33 @@
       window.removeEventListener('keyup', this._onKeyUp);
     }
   };
+  var moveCloudFlag = true;
+
+  var moveClouds = function() {
+    var scrollTimeout;
+    var cloudBlock = document.querySelector('.header-clouds');
+
+    window.addEventListener('scroll', function() {
+      var footerPosition = cloudBlock.getBoundingClientRect();
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(function() {
+        var GAP = 20;
+        if(footerPosition.bottom + GAP < 0) {
+          moveCloudFlag = false;
+        } else {
+          moveCloudFlag = true;
+        }
+
+        var demo = document.querySelector('.demo').getBoundingClientRect();
+        if((demo.top > window.innerHeight + GAP) || (demo.bottom + GAP) < 0) {
+          game.setGameStatus(window.Game.Verdict.PAUSE);
+        }
+      }, 100);
+      if(moveCloudFlag) {
+        cloudBlock.style.backgroundPosition = (Math.max(0, footerPosition.bottom) - footerPosition.height / footerPosition.height) + '% 0';
+      }
+    });
+  };
 
   window.Game = Game;
   window.Game.Verdict = Verdict;
@@ -738,4 +765,5 @@
   var game = new Game(document.querySelector('.demo'));
   game.initializeLevelAndStart();
   game.setGameStatus(window.Game.Verdict.INTRO);
+  moveClouds();
 })();

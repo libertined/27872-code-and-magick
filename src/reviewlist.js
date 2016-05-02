@@ -2,16 +2,11 @@
 
 define([
   './load',
-  './utils'
-], function(load, utils) {
+  './utils',
+  './review'
+], function(load, utils, Review) {
   /** @constant {string} */
   var REVIEW_LOAD_URL = 'http://o0.github.io/assets/json/reviews.json';
-
-  /** @constant {int} */
-  var IMG_SIZE = 124;
-
-  /** @constant {int} */
-  var RATING_STAR = 30;
 
   /** @constant {int} */
   var PAGE_SIZE = 3;
@@ -22,10 +17,8 @@ define([
   var reviewFilterBlock = document.querySelector('.reviews-filter');
   var reviewBlock = document.querySelector('.reviews-list');
   var reviewContainer = document.querySelector('.reviews');
-  var templateElement = document.querySelector('template');
   var moreBtn = document.querySelector('.reviews-controls-more');
   var currentPage = 0;
-  var elementToClone;
 
   /** @type {Array.<Object>} */
   var reviewsList = [];
@@ -33,42 +26,11 @@ define([
   /** @type {Array.<Object>} */
   var filteredReviews = [];
 
-  if ('content' in templateElement) {
-    elementToClone = templateElement.content.querySelector('.review');
-  } else {
-    elementToClone = templateElement.querySelector('.review');
-  }
-
   /**
-   * @param {Object} data
-   * @param {HTMLElement} container
-   * @return {HTMLElement}
-   * */
-  var getReviewElement = function(data, container) {
-    var element = elementToClone.cloneNode(true);
-
-    var ratingWidth = RATING_STAR;//О идее тут нужно определить ширину одной зыездочки, но у меня не получилось
-    element.querySelector('.review-rating').style.width = data.rating * ratingWidth + 'px';
-    element.querySelector('.review-text').textContent = data.description;
-
-    var avatarImg = new Image();
-
-    avatarImg.onload = function() {
-      element.querySelector('.review-author').src = avatarImg.src;
-      element.querySelector('.review-author').width = IMG_SIZE;
-      element.querySelector('.review-author').height = IMG_SIZE;
-      element.querySelector('.review-author').alt = data.author.name;
-      element.querySelector('.review-author').title = data.author.name;
-    };
-
-    avatarImg.onerror = function() {
-      element.classList.add('review-load-failure');
-    };
-
-    avatarImg.src = data.author.picture;
-
-    container.appendChild(element);
-  };
+   * Массив отрисованных объектов отзывов
+   * @type {Array.<Review>}
+   */
+  var renderedReviews = [];
 
   /** @param {function(string)} res */
   var loadShow = function(res) {
@@ -85,25 +47,33 @@ define([
    * @param {int} page*/
   var renderReviews = function(reviews, page, replace) {
     if (replace) {
-      reviewBlock.innerHTML = '';
+      renderedReviews.forEach(function(review) {
+        review.remove();
+      });
+
+      renderedReviews = [];
     }
 
     var from = page * PAGE_SIZE;
     var to = from + PAGE_SIZE;
 
+    var container = document.createDocumentFragment();
+
     reviews.slice(from, to).forEach(function(review) {
-      getReviewElement(review, reviewBlock);
+      renderedReviews.push(new Review(review, container));
     });
 
+    reviewBlock.appendChild(container);
+
     if (utils.isNextPageAvailable(reviews, page + 1, PAGE_SIZE)) {
-      utils.setElementHidden(moreBtn, true);
-    } else {
       utils.setElementHidden(moreBtn, false);
+    } else {
+      utils.setElementHidden(moreBtn, true);
     }
   };
 
   /**
-   * @param {Array.<Object>} hotels
+   * @param {Array.<Object>} reviews
    * @param {string} filter
    */
   var getFilteredReviews = function(reviews, filter) {
@@ -169,7 +139,7 @@ define([
   loadShow('show');
   load(REVIEW_LOAD_URL, function(loadedReview) {
     reviewsList = loadedReview;
-    renderReviews(reviewsList, currentPage);
+    renderReviews(reviewsList, currentPage, true);
     loadShow('hide');
     setFiltrationEnabled(reviewsList);
     setFilter(DEFAULT_FILTER);

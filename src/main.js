@@ -4,7 +4,7 @@ require([
   './gallery',
   './form',
   './game',
-  './reviews'
+  './reviewlist'
 ], function(gallery) {
   var pictureBlock = document.querySelector('.photogallery');
   var picturesCollect = pictureBlock.querySelectorAll('.photogallery-image img');

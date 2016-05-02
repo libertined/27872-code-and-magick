@@ -116,7 +116,7 @@ define([
 
   /** @param {string} filter */
   var setFilter = function(filter) {
-    reviewFilterBlock.querySelector('#'+filter).checked = true;
+    reviewFilterBlock.querySelector('#' + filter).checked = true;
     filteredReviews = getFilteredReviews(reviewsList, filter);
     currentPage = 0;
     renderReviews(filteredReviews, currentPage, true);

@@ -43,38 +43,49 @@ define(['./utils'], function(utils) {
      * @param {int} picture
      */
     this.showPicture = function(picture) {
-      self.activePicture = picture;
+      if(isNaN(picture)) {
+        self.galleryPictures.forEach(function(item, i) {
+          if(item.src.indexOf(picture) !== -1) {
+            self.activePicture = i;
+          }
+        });
+      } else {
+        self.activePicture = picture;
+      }
+
       var curPhoto = self.preview.querySelector('img');
       self.curPictureNumber.innerHTML = +self.activePicture + 1;
-      self.navigateVisible(picture);
+      self.navigateVisible(self.activePicture);
 
       if(curPhoto) {
         curPhoto.remove();
       }
       var pictureElement = new Image();
       self.preview.appendChild(pictureElement);
-      pictureElement.src = self.galleryPictures[ picture ].src;
+      pictureElement.src = self.galleryPictures[ self.activePicture ].src;
     };
 
     this.showNext = function() {
       var nextIndex = +self.activePicture + 1;
       if(nextIndex <= self.galleryPictures.length - 1) {
-        self.showPicture(nextIndex);
+        var picturSrc = self.galleryPictures[ nextIndex ].src.replace(location.origin, '');
+        location.hash = 'photo' + picturSrc;
       }
     };
 
     this.showPrev = function() {
       var prevIndex = +self.activePicture - 1;
       if(prevIndex >= 0) {
-        self.showPicture(prevIndex);
+        var picturSrc = self.galleryPictures[ prevIndex ].src.replace(location.origin, '');
+        location.hash = 'photo' + picturSrc;
       }
     };
 
     this.hideGallery = function() {
-      utils.setElementHidden(self.element, true);
-
+      location.hash = '';
       document.removeEventListener('keydown', self._onDocumentKeyDown);
       self.closeElement.removeEventListener('click', self._onCloseClick);
+      utils.setElementHidden(self.element, true);
     };
 
     /**
@@ -118,6 +129,17 @@ define(['./utils'], function(utils) {
         self.galleryPictures = pictures;
       }
     };
+
+    this.isPhoto = function() {
+      var curTag = location.hash.match(/#photo\/(\S+)/);
+      if(curTag && curTag[1]) {
+        self.showGallery(curTag[1]);
+      }
+    };
+
+    window.addEventListener('hashchange', function() {
+      self.isPhoto();
+    });
   };
 
   return new Gallery();

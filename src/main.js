@@ -19,9 +19,10 @@ require([
 
   for(var j = 0; j < picturesCollect.length; j++) {
     picturesCollect[j].addEventListener('click', function(evt) {
-      evt.stopPropagation();
-      Gallery.showGallery(evt.target.getAttribute('data-number'));
+      evt.preventDefault();
+      location.hash = 'photo/' + evt.target.getAttribute('src');
     });
   }
 
+  Gallery.isPhoto();
 });

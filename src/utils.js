@@ -7,6 +7,13 @@ define(function() {
   /** @constant {number} */
   var GAP = 50;
 
+  /** @enum {number} */
+  var KeyCode = {
+    ENTER: 13,
+    ESC: 27,
+    SPACE: 32
+  };
+
 
   return {
     /**
@@ -26,6 +33,14 @@ define(function() {
      */
     isNextPageAvailable: function(listSize, page, pageSize) {
       return page < Math.floor(listSize.length / pageSize);
+    },
+
+    /**
+     * @param {Event} evt
+     * @return {boolean}
+     */
+    isDeactivationEvent: function(evt) {
+      return evt.keyCode === KeyCode.ESC;
     },
 
 

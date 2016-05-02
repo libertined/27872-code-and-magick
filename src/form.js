@@ -1,6 +1,9 @@
 'use strict';
 
-(function() {
+
+define([
+  './utils'
+], function(utils) {
   var formContainer = document.querySelector('.overlay-container');
   var formOpenButton = document.querySelector('.reviews-controls-new');
   var formCloseButton = document.querySelector('.review-form-close');
@@ -26,10 +29,10 @@
       }
     }
     if(countVis > 0) {
-      document.querySelector('.review-form-control.review-fields').style.display = 'inline-block';
+      utils.setElementHidden(document.querySelector('.review-form-control.review-fields'), false);
       document.querySelector('.review-form-control.review-submit').disabled = true;
     } else {
-      document.querySelector('.review-form-control.review-fields').style.display = 'none';
+      utils.setElementHidden(document.querySelector('.review-form-control.review-fields'), true);
       document.querySelector('.review-form-control.review-submit').disabled = false;
     }
   };
@@ -47,12 +50,12 @@
 
   formOpenButton.onclick = function(evt) {
     evt.preventDefault();
-    formContainer.classList.remove('invisible');
+    utils.setElementHidden(formContainer, false);
   };
 
   formCloseButton.onclick = function(evt) {
     evt.preventDefault();
-    formContainer.classList.add('invisible');
+    utils.setElementHidden(formContainer, true);
   };
 
   for(var i = 0; i < markField.length; i++) {
@@ -108,4 +111,4 @@
       this.submit();
     }
   };
-})();
+});

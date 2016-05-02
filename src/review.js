@@ -76,3 +76,17 @@ function Review(data, container) {
 }
 
 module.exports = Review;
+/* Я не поняла как это сделать с помощью AMD. Непонятно как мне передать парамтеры в конструктор класса
+Делала так
+define([
+ './utils'
+ ], function() {
+ ......
+
+ function Review(data, container) {
+ ......
+ }
+
+ return new Review();
+ });
+* */

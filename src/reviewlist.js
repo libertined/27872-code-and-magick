@@ -110,11 +110,13 @@ define([
         });
         break;
     }
+    localStorage.setItem('filter', filter);
     return reviewsToFilter;
   };
 
   /** @param {string} filter */
   var setFilter = function(filter) {
+    reviewFilterBlock.querySelector('#'+filter).checked = true;
     filteredReviews = getFilteredReviews(reviewsList, filter);
     currentPage = 0;
     renderReviews(filteredReviews, currentPage, true);
@@ -142,6 +144,9 @@ define([
     renderReviews(reviewsList, currentPage, true);
     loadShow('hide');
     setFiltrationEnabled(reviewsList);
+    if(localStorage.getItem('filter')) {
+      DEFAULT_FILTER = localStorage.getItem('filter');
+    }
     setFilter(DEFAULT_FILTER);
     showMore();
   }, function() {

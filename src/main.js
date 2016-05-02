@@ -5,7 +5,7 @@ require([
   './form',
   './game',
   './reviewlist'
-], function(gallery) {
+], function(Gallery) {
   var pictureBlock = document.querySelector('.photogallery');
   var picturesCollect = pictureBlock.querySelectorAll('.photogallery-image img');
   var picturesImg = [];
@@ -15,12 +15,12 @@ require([
     picturesCollect[i].setAttribute('data-number', i);
   }
 
-  gallery.savePictures(picturesImg);
+  Gallery.savePictures(picturesImg);
 
   for(var j = 0; j < picturesCollect.length; j++) {
     picturesCollect[j].addEventListener('click', function(evt) {
       evt.stopPropagation();
-      gallery.showGallery(evt.target.getAttribute('data-number'));
+      Gallery.showGallery(evt.target.getAttribute('data-number'));
     });
   }
 

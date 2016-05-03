@@ -15,7 +15,9 @@ require([
     picturesCollect[i].setAttribute('data-number', i);
   }
 
-  Gallery.savePictures(picturesImg);
+  var gallery = new Gallery();
+
+  gallery.savePictures(picturesImg);
 
   for(var j = 0; j < picturesCollect.length; j++) {
     picturesCollect[j].addEventListener('click', function(evt) {
@@ -24,5 +26,5 @@ require([
     });
   }
 
-  Gallery.isPhoto();
+  gallery.isPhoto();
 });
